@@ -4951,4 +4951,8 @@
 
     <!-- Battery preferences -->
     <string name="status_bar_battery_percent">Enable status bar battery percent</string>
+
+    <!-- App Ops -->
+    <string name="app_ops_title">App Ops</string>
+    <string name="app_ops_summary">Fine-grained application permission controls</string>
 </resources>

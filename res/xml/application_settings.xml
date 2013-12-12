@@ -27,6 +27,16 @@
         android:key="applications_settings">
 
     <PreferenceScreen
+            android:fragment="com.android.settings.applications.AppOpsSummary"
+            android:summary="@string/app_ops_summary"
+            android:title="@string/app_ops_title">
+        <intent
+                android:action="com.android.settings.Settings$AppOpsSummaryActivity"
+                android:targetPackage="com.android.settings"
+                android:targetClass="com.android.settings.Settings$AppOpsSummaryActivity" />
+    </PreferenceScreen>
+
+    <PreferenceScreen
             android:fragment="com.android.settings.applications.ManageApplications"
             android:title="@string/manageapplications_settings_title"
             android:summary="@string/manageapplications_settings_summary">
@@ -62,7 +72,6 @@
         android:entries="@array/app_install_location_entries"
         android:entryValues="@array/app_install_location_values"/>
 
-    <!-- Disabled quick launch settings pending UI redesign.
     <PreferenceScreen
             android:key="quick_launch"
             android:title="@string/quick_launch_title"
@@ -71,7 +80,6 @@
                 android:targetPackage="com.android.settings"
                 android:targetClass="com.android.settings.quicklaunch.QuickLaunchSettings" />
     </PreferenceScreen>
-    -->
 
 </PreferenceScreen>
 

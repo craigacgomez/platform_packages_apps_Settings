@@ -26,21 +26,23 @@ import android.preference.PreferenceScreen;
 import android.provider.Settings;
 
 public class ApplicationSettings extends SettingsPreferenceFragment {
-    
+
     private static final String KEY_TOGGLE_ADVANCED_SETTINGS = "toggle_advanced_settings";
     private static final String KEY_APP_INSTALL_LOCATION = "app_install_location";
+    private static final String KEY_QUICK_LAUNCH = "quick_launch";
 
     // App installation location. Default is ask the user.
     private static final int APP_INSTALL_AUTO = 0;
     private static final int APP_INSTALL_DEVICE = 1;
     private static final int APP_INSTALL_SDCARD = 2;
-    
+
     private static final String APP_INSTALL_DEVICE_ID = "device";
     private static final String APP_INSTALL_SDCARD_ID = "sdcard";
     private static final String APP_INSTALL_AUTO_ID = "auto";
-    
+
     private CheckBoxPreference mToggleAdvancedSettings;
     private ListPreference mInstallLocation;
+    private PreferenceScreen mQuickLaunch;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -57,6 +59,8 @@ public class ApplicationSettings extends SettingsPreferenceFragment {
         if (false) {
             getPreferenceScreen().removePreference(mInstallLocation);
         }
+
+        mQuickLaunch = (PreferenceScreen) findPreference(KEY_QUICK_LAUNCH);
 
         mInstallLocation = (ListPreference) findPreference(KEY_APP_INSTALL_LOCATION);
         // Is app default install location set?
