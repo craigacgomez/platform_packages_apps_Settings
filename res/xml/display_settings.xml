@@ -85,4 +85,9 @@
                 android:defaultValue="0"
                 android:persistent="false" />
 
+        <CheckBoxPreference
+                android:key="status_bar_battery_percent"
+                android:title="@string/status_bar_battery_percent"
+                android:persistent="false" />
+
 </PreferenceScreen>

@@ -58,6 +58,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private static final String KEY_NOTIFICATION_PULSE = "notification_pulse";
     private static final String KEY_SCREEN_SAVER = "screensaver";
     private static final String KEY_NAV_BAR_POSITION = "nav_bar_position";
+    private static final String KEY_STATUS_BAR_BATTERY_PERCENT = "status_bar_battery_percent";
 
     private static final int DLG_GLOBAL_CHANGE_WARNING = 1;
 
@@ -72,6 +73,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private ListPreference mScreenTimeoutPreference;
     private Preference mScreenSaverPreference;
     private ListPreference mNavigationBarPositionPref;
+    private CheckBoxPreference mStatusBarBatteryPercentPref;
 
     private final RotationPolicy.RotationPolicyListener mRotationPolicyListener =
             new RotationPolicy.RotationPolicyListener() {
@@ -151,6 +153,14 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         } else {
             getPreferenceScreen().removePreference(findPreference(KEY_NAV_BAR_POSITION));
         }
+
+        mStatusBarBatteryPercentPref = (CheckBoxPreference) findPreference(KEY_STATUS_BAR_BATTERY_PERCENT);
+        try {
+            mStatusBarBatteryPercentPref.setChecked(Settings.System.getInt(resolver,
+                                                    Settings.System.STATUS_BAR_BATTERY_PERCENT) == 1);
+            mStatusBarBatteryPercentPref.setOnPreferenceChangeListener(this);
+        } catch (SettingNotFoundException snfe) {
+               Log.e(TAG, Settings.System.STATUS_BAR_BATTERY_PERCENT + " not found");
         }
     }
 
@@ -350,6 +360,11 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         } else if (preference == mNotificationPulse) {
             boolean value = mNotificationPulse.isChecked();
             Settings.System.putInt(getContentResolver(), Settings.System.NOTIFICATION_LIGHT_PULSE,
+                    value ? 1 : 0);
+            return true;
+        } else if (preference == mStatusBarBatteryPercentPref) {
+            boolean value = mStatusBarBatteryPercentPref.isChecked();
+            Settings.System.putInt(getContentResolver(), Settings.System.STATUS_BAR_BATTERY_PERCENT,
                     value ? 1 : 0);
             return true;
         }

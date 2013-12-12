@@ -4917,4 +4917,7 @@
     <string name="navigation_bar_default">Default (Center)</string>
     <string name="navigation_bar_left">Left</string>
     <string name="navigation_bar_right">Right</string>
+
+    <!-- Battery preferences -->
+    <string name="status_bar_battery_percent">Enable status bar battery percent</string>
 </resources>
