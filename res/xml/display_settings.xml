@@ -77,4 +77,12 @@
                     android:targetPackage="com.cyanogenmod.lockclock" />
         </PreferenceScreen>
 
+        <ListPreference
+                android:key="nav_bar_position"
+                android:title="@string/nav_bar_position"
+                android:entries="@array/nav_bar_position_entries"
+                android:entryValues="@array/nav_bar_position_values"
+                android:defaultValue="0"
+                android:persistent="false" />
+
 </PreferenceScreen>
