@@ -46,8 +46,11 @@ import android.preference.PreferenceScreen;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
+import android.text.format.DateFormat;
 import android.util.Log;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class SoundSettings extends SettingsPreferenceFragment implements
@@ -75,6 +78,7 @@ public class SoundSettings extends SettingsPreferenceFragment implements
     private static final String KEY_DOCK_AUDIO_SETTINGS = "dock_audio";
     private static final String KEY_DOCK_SOUNDS = "dock_sounds";
     private static final String KEY_DOCK_AUDIO_MEDIA_ENABLED = "dock_audio_media_enabled";
+    private static final String KEY_QUIET_HOURS = "quiet_hours_settings";
 
     private static final String[] NEED_VOICE_CAPABILITY = {
             KEY_RINGTONE, KEY_DTMF_TONE, KEY_CATEGORY_CALLS,
@@ -101,6 +105,7 @@ public class SoundSettings extends SettingsPreferenceFragment implements
     private CheckBoxPreference mDockSounds;
     private Intent mDockIntent;
     private CheckBoxPreference mDockAudioMediaEnabled;
+    private PreferenceScreen mQuietHours;
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -120,6 +125,8 @@ public class SoundSettings extends SettingsPreferenceFragment implements
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Intent.ACTION_DOCK_EVENT)) {
                 handleDockChange(intent);
+            } else if (intent.getAction().equals(AudioManager.RINGER_MODE_CHANGED_ACTION)) {
+                updateState(false);
             }
         }
     };
@@ -226,6 +233,16 @@ public class SoundSettings extends SettingsPreferenceFragment implements
             }
         };
 
+        mQuietHours = (PreferenceScreen) findPreference(KEY_QUIET_HOURS);
+        if (Settings.System.getInt(resolver, Settings.System.QUIET_HOURS_ENABLED, 0) == 1) {
+            mQuietHours.setSummary(getString(R.string.quiet_hours_active_from) + " " +
+                    returnTime(Settings.System.getString(resolver, Settings.System.QUIET_HOURS_START))
+                    + " " + getString(R.string.quiet_hours_active_to) + " " +
+                    returnTime(Settings.System.getString(resolver, Settings.System.QUIET_HOURS_END)));
+        } else {
+            mQuietHours.setSummary(getString(R.string.quiet_hours_summary));
+        }
+
         initDockSettings();
     }
 
@@ -233,9 +250,13 @@ public class SoundSettings extends SettingsPreferenceFragment implements
     public void onResume() {
         super.onResume();
 
+        updateState(true);
         lookupRingtoneNames();
 
         IntentFilter filter = new IntentFilter(Intent.ACTION_DOCK_EVENT);
+        getActivity().registerReceiver(mReceiver, filter);
+
+        filter = new IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION);
         getActivity().registerReceiver(mReceiver, filter);
     }
 
@@ -271,6 +292,21 @@ public class SoundSettings extends SettingsPreferenceFragment implements
             }
         }
         mHandler.sendMessage(mHandler.obtainMessage(msg, summary));
+    }
+
+    // updateState in fact updates the UI to reflect the system state
+    private void updateState(boolean force) {
+        if (getActivity() == null) return;
+        ContentResolver resolver = getContentResolver();
+
+        if (Settings.System.getInt(resolver, Settings.System.QUIET_HOURS_ENABLED, 0) == 1) {
+            mQuietHours.setSummary(getString(R.string.quiet_hours_active_from) + " " +
+                    returnTime(Settings.System.getString(resolver, Settings.System.QUIET_HOURS_START))
+                    + " " + getString(R.string.quiet_hours_active_to) + " " +
+                    returnTime(Settings.System.getString(resolver, Settings.System.QUIET_HOURS_END)));
+        } else {
+            mQuietHours.setSummary(getString(R.string.quiet_hours_summary));
+        }
     }
 
     private void lookupRingtoneNames() {
@@ -336,6 +372,9 @@ public class SoundSettings extends SettingsPreferenceFragment implements
         } else if (preference == mDockAudioMediaEnabled) {
             Settings.Global.putInt(getContentResolver(), Settings.Global.DOCK_AUDIO_MEDIA_ENABLED,
                     mDockAudioMediaEnabled.isChecked() ? 1 : 0);
+        } else {
+            // If we didn't handle it, let preferences handle it.
+            return super.onPreferenceTreeClick(preferenceScreen, preference);
         }
         return true;
     }
@@ -424,6 +463,22 @@ public class SoundSettings extends SettingsPreferenceFragment implements
                 mDockAudioSettings.setEnabled(false);
             }
         }
+    }
+
+    private String returnTime(String t) {
+        if (t == null || t.equals("")) {
+            return "";
+        }
+        int hr = Integer.parseInt(t.trim());
+        int mn = hr;
+
+        hr = hr / 60;
+        mn = mn % 60;
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, hr);
+        cal.set(Calendar.MINUTE, mn);
+        Date date = cal.getTime();
+        return DateFormat.getTimeFormat(getActivity().getApplicationContext()).format(date);
     }
 
     @Override
