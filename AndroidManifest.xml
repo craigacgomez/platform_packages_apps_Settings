@@ -880,7 +880,6 @@
                 android:value="com.android.settings.NotificationStation" />
         </activity>
 
-
         <activity android:name="Settings$AppOpsSummaryActivity"
                 android:label="@string/app_ops_settings"
                 android:taskAffinity=""

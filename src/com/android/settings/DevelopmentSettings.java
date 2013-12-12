@@ -313,6 +313,8 @@ public class DevelopmentSettings extends RestrictedSettingsFragment
             mAllPrefs.add(selectRuntime);
             filterRuntimeOptions(selectRuntime);
         }
+        // temporarily hide runtime selector till I fix the ART boot loops
+        removePreference(selectRuntime);
 
         Preference hdcpChecking = findPreference(HDCP_CHECKING_KEY);
         if (hdcpChecking != null) {
