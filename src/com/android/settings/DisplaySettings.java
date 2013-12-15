@@ -134,6 +134,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             } catch (SettingNotFoundException snfe) {
                 Log.e(TAG, Settings.System.NOTIFICATION_LIGHT_PULSE + " not found");
             }
+        }
 
         if (mIsPrimary) {
             int mNavigationBarPositionValue = Settings.Global.getInt(resolver,
