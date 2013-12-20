@@ -4959,4 +4959,7 @@
     <!-- Back long-press kill -->
     <string name="kill_app_longpress_back">Kill app back button</string>
     <string name="kill_app_longpress_back_summary">Kill the foreground app by long-pressing the back key</string>
+
+    <!-- Device hostname editor -->
+    <string name="device_hostname">Device hostname</string>
 </resources>
