@@ -90,4 +90,10 @@
                 android:title="@string/status_bar_battery_percent_title"
                 android:persistent="false" />
 
+        <CheckBoxPreference
+                android:key="volume_wake_screen"
+                android:title="@string/volume_wake_screen_title"
+                android:summary="@string/volume_wake_screen_summary"
+                android:persistent="false" />
+
 </PreferenceScreen>

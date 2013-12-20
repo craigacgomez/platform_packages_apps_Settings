@@ -45,6 +45,7 @@ import android.preference.PreferenceGroup;
 import android.preference.PreferenceScreen;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.provider.Settings.SettingNotFoundException;
 import android.telephony.TelephonyManager;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -79,6 +80,7 @@ public class SoundSettings extends SettingsPreferenceFragment implements
     private static final String KEY_DOCK_SOUNDS = "dock_sounds";
     private static final String KEY_DOCK_AUDIO_MEDIA_ENABLED = "dock_audio_media_enabled";
     private static final String KEY_QUIET_HOURS = "quiet_hours_settings";
+    private static final String KEY_VOLUME_MUSIC_CONTROLS = "volume_music_controls";
 
     private static final String[] NEED_VOICE_CAPABILITY = {
             KEY_RINGTONE, KEY_DTMF_TONE, KEY_CATEGORY_CALLS,
@@ -106,6 +108,7 @@ public class SoundSettings extends SettingsPreferenceFragment implements
     private Intent mDockIntent;
     private CheckBoxPreference mDockAudioMediaEnabled;
     private PreferenceScreen mQuietHours;
+    private CheckBoxPreference mVolumeMusicControls;
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -243,6 +246,15 @@ public class SoundSettings extends SettingsPreferenceFragment implements
             mQuietHours.setSummary(getString(R.string.quiet_hours_summary));
         }
 
+        mVolumeMusicControls = (CheckBoxPreference) findPreference(KEY_VOLUME_MUSIC_CONTROLS);
+        try {
+            mVolumeMusicControls.setChecked(Settings.System.getInt(resolver,
+                                                    Settings.System.VOLUME_MUSIC_CONTROLS) == 1);
+            mVolumeMusicControls.setOnPreferenceChangeListener(this);
+        } catch (SettingNotFoundException snfe) {
+               Log.e(TAG, Settings.System.VOLUME_MUSIC_CONTROLS + " not found");
+        }
+
         initDockSettings();
     }
 
@@ -372,6 +384,10 @@ public class SoundSettings extends SettingsPreferenceFragment implements
         } else if (preference == mDockAudioMediaEnabled) {
             Settings.Global.putInt(getContentResolver(), Settings.Global.DOCK_AUDIO_MEDIA_ENABLED,
                     mDockAudioMediaEnabled.isChecked() ? 1 : 0);
+        } else if (preference == mVolumeMusicControls) {
+            boolean value = mVolumeMusicControls.isChecked();
+            Settings.System.putInt(getContentResolver(), Settings.System.VOLUME_MUSIC_CONTROLS,
+                    value ? 1 : 0);
         } else {
             // If we didn't handle it, let preferences handle it.
             return super.onPreferenceTreeClick(preferenceScreen, preference);

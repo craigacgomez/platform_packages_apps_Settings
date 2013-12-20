@@ -4956,6 +4956,12 @@
     <string name="app_ops_title">App Ops</string>
     <string name="app_ops_summary">Fine-grained application permission controls</string>
 
+    <!-- Volume key controls -->
+    <string name="volume_wake_screen_title">Volume rocker wake</string>
+    <string name="volume_wake_screen_summary">Pressing the volume rocker keys will wake the device</string>
+    <string name="volume_music_controls_title">Volume rocker music controls</string>
+    <string name="volume_music_controls_summary">Long-pressing the volume rocker keys when the screen is off seek music tracks</string>
+
     <!-- Back long-press kill -->
     <string name="kill_app_longpress_back">Kill app back button</string>
     <string name="kill_app_longpress_back_summary">Kill the foreground app by long-pressing the back key</string>
