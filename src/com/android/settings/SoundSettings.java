@@ -81,6 +81,7 @@ public class SoundSettings extends SettingsPreferenceFragment implements
     private static final String KEY_DOCK_AUDIO_MEDIA_ENABLED = "dock_audio_media_enabled";
     private static final String KEY_QUIET_HOURS = "quiet_hours_settings";
     private static final String KEY_VOLUME_MUSIC_CONTROLS = "volume_music_controls";
+    private static final String KEY_SAFE_HEADSET_VOLUME = "safe_headset_volume";
 
     private static final String[] NEED_VOICE_CAPABILITY = {
             KEY_RINGTONE, KEY_DTMF_TONE, KEY_CATEGORY_CALLS,
@@ -109,6 +110,7 @@ public class SoundSettings extends SettingsPreferenceFragment implements
     private CheckBoxPreference mDockAudioMediaEnabled;
     private PreferenceScreen mQuietHours;
     private CheckBoxPreference mVolumeMusicControls;
+    private CheckBoxPreference mSafeHeadsetVolume;
 
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
@@ -255,6 +257,15 @@ public class SoundSettings extends SettingsPreferenceFragment implements
                Log.e(TAG, Settings.System.VOLUME_MUSIC_CONTROLS + " not found");
         }
 
+        mSafeHeadsetVolume = (CheckBoxPreference) findPreference(KEY_SAFE_HEADSET_VOLUME);
+        try {
+            mSafeHeadsetVolume.setChecked(Settings.System.getInt(resolver,
+                                                    Settings.System.SAFE_HEADSET_VOLUME) == 1);
+            mSafeHeadsetVolume.setOnPreferenceChangeListener(this);
+        } catch (SettingNotFoundException snfe) {
+               Log.e(TAG, Settings.System.SAFE_HEADSET_VOLUME + " not found");
+        }
+
         initDockSettings();
     }
 
@@ -387,6 +398,10 @@ public class SoundSettings extends SettingsPreferenceFragment implements
         } else if (preference == mVolumeMusicControls) {
             boolean value = mVolumeMusicControls.isChecked();
             Settings.System.putInt(getContentResolver(), Settings.System.VOLUME_MUSIC_CONTROLS,
+                    value ? 1 : 0);
+        } else if (preference == mSafeHeadsetVolume) {
+            boolean value = mSafeHeadsetVolume.isChecked();
+            Settings.System.putInt(getContentResolver(), Settings.System.SAFE_HEADSET_VOLUME,
                     value ? 1 : 0);
         } else {
             // If we didn't handle it, let preferences handle it.

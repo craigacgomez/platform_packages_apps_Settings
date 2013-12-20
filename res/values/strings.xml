@@ -4962,6 +4962,10 @@
     <string name="volume_music_controls_title">Volume rocker music controls</string>
     <string name="volume_music_controls_summary">Long-pressing the volume rocker keys when the screen is off seek music tracks</string>
 
+    <!-- Safe headset volume toggle -->
+    <string name="safe_headset_volume_title">Enable safe headset volume</string>
+    <string name="safe_headset_volume_summary">Prevents loud volume levels when a headset is first plugged in</string>
+
     <!-- Back long-press kill -->
     <string name="kill_app_longpress_back">Kill app back button</string>
     <string name="kill_app_longpress_back_summary">Kill the foreground app by long-pressing the back key</string>
