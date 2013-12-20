@@ -4956,6 +4956,9 @@
     <string name="app_ops_title">App Ops</string>
     <string name="app_ops_summary">Fine-grained application permission controls</string>
 
+    <!-- Lockscreen quick unlock -->
+    <string name="lockscreen_quick_unlock_title">Enable quick unlock</string>
+
     <!-- Volume key controls -->
     <string name="volume_wake_screen_title">Volume rocker wake</string>
     <string name="volume_wake_screen_summary">Pressing the volume rocker keys will wake the device</string>
