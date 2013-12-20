@@ -87,7 +87,7 @@
 
         <CheckBoxPreference
                 android:key="status_bar_battery_percent"
-                android:title="@string/status_bar_battery_percent"
+                android:title="@string/status_bar_battery_percent_title"
                 android:persistent="false" />
 
 </PreferenceScreen>

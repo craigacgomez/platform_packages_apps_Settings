@@ -4950,7 +4950,7 @@
     <string name="end_time_title">End</string>
 
     <!-- Battery preferences -->
-    <string name="status_bar_battery_percent">Enable status bar battery percent</string>
+    <string name="status_bar_battery_percent_title">Enable status bar battery percent</string>
 
     <!-- App Ops -->
     <string name="app_ops_title">App Ops</string>
