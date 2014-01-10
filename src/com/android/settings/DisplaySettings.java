@@ -347,7 +347,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             ProcessBuilder pb = new ProcessBuilder("su", "-c", "/system/bin/sh");
             Process p = pb.start();
             OutputStreamWriter osw = new OutputStreamWriter(p.getOutputStream());
-            osw.write("pkill com.android.systemui" + "\n");
+            osw.write("pkill -TERM -f com.android.systemui" + "\n");
             osw.write("exit \n");
             osw.flush();
             osw.close();
