@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.app.admin.DevicePolicyManager;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -71,6 +72,15 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
 
     private static final int DLG_GLOBAL_CHANGE_WARNING = 1;
 
+    // Default timeout for heads up snooze. 5 minutes.
+    protected static final int DEFAULT_TIME_HEADS_UP_SNOOZE = 300000;
+
+    private static final String PREF_HEADS_UP_EXPANDED = "heads_up_expanded";
+    private static final String PREF_HEADS_UP_SNOOZE_TIME = "heads_up_snooze_time";
+    private static final String PREF_HEADS_UP_TIME_OUT = "heads_up_time_out";
+    private static final String PREF_HEADS_UP_SHOW_UPDATE = "heads_up_show_update";
+    private static final String PREF_HEADS_UP_GRAVITY = "heads_up_gravity";
+
     private boolean mIsPrimary;
 
     private CheckBoxPreference mAccelerometer;
@@ -84,6 +94,12 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private ListPreference mNavigationBarPositionPref;
     private CheckBoxPreference mStatusBarBatteryPercentPref;
     private CheckBoxPreference mVolumeWakeScreenPref;
+
+    private ListPreference mHeadsUpSnoozeTime;
+    private ListPreference mHeadsUpTimeOut;
+    private CheckBoxPreference mHeadsUpExpanded;
+    private CheckBoxPreference mHeadsUpShowUpdates;
+    private CheckBoxPreference mHeadsUpGravity;
 
     private final RotationPolicy.RotationPolicyListener mRotationPolicyListener =
             new RotationPolicy.RotationPolicyListener() {
@@ -100,6 +116,8 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
 
         // Check for owner/primary user
         mIsPrimary = UserHandle.myUserId() == UserHandle.USER_OWNER;
+
+        PackageManager pm = getPackageManager();
 
         addPreferencesFromResource(R.xml.display_settings);
 
@@ -182,6 +200,44 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         } catch (SettingNotFoundException snfe) {
                Log.e(TAG, Settings.System.VOLUME_WAKE_SCREEN + " not found");
         }
+
+        mHeadsUpExpanded = (CheckBoxPreference) findPreference(PREF_HEADS_UP_EXPANDED);
+        mHeadsUpExpanded.setChecked(Settings.System.getIntForUser(getContentResolver(),
+                Settings.System.HEADS_UP_EXPANDED, 0, UserHandle.USER_CURRENT) == 1);
+        mHeadsUpExpanded.setOnPreferenceChangeListener(this);
+
+        mHeadsUpShowUpdates = (CheckBoxPreference) findPreference(PREF_HEADS_UP_SHOW_UPDATE);
+        mHeadsUpShowUpdates.setChecked(Settings.System.getIntForUser(getContentResolver(),
+                Settings.System.HEADS_UP_SHOW_UPDATE, 0, UserHandle.USER_CURRENT) == 1);
+        mHeadsUpShowUpdates.setOnPreferenceChangeListener(this);
+
+        mHeadsUpGravity = (CheckBoxPreference) findPreference(PREF_HEADS_UP_GRAVITY);
+        mHeadsUpGravity.setChecked(Settings.System.getIntForUser(getContentResolver(),
+                Settings.System.HEADS_UP_GRAVITY_BOTTOM, 0, UserHandle.USER_CURRENT) == 1);
+        mHeadsUpGravity.setOnPreferenceChangeListener(this);
+
+        mHeadsUpSnoozeTime = (ListPreference) findPreference(PREF_HEADS_UP_SNOOZE_TIME);
+        mHeadsUpSnoozeTime.setOnPreferenceChangeListener(this);
+        int headsUpSnoozeTime = Settings.System.getInt(getContentResolver(),
+                Settings.System.HEADS_UP_SNOOZE_TIME, DEFAULT_TIME_HEADS_UP_SNOOZE);
+        mHeadsUpSnoozeTime.setValue(String.valueOf(headsUpSnoozeTime));
+        updateHeadsUpSnoozeTimeSummary(headsUpSnoozeTime);
+
+        Resources systemUiResources;
+        try {
+            systemUiResources = pm.getResourcesForApplication("com.android.systemui");
+        } catch (Exception e) {
+            return;
+        }
+
+        int defaultTimeOut = systemUiResources.getInteger(systemUiResources.getIdentifier(
+                    "com.android.systemui:integer/heads_up_notification_decay", null, null));
+        mHeadsUpTimeOut = (ListPreference) findPreference(PREF_HEADS_UP_TIME_OUT);
+        mHeadsUpTimeOut.setOnPreferenceChangeListener(this);
+        int headsUpTimeOut = Settings.System.getInt(getContentResolver(),
+                Settings.System.HEADS_UP_NOTIFCATION_DECAY, defaultTimeOut);
+        mHeadsUpTimeOut.setValue(String.valueOf(headsUpTimeOut));
+        updateHeadsUpTimeOutSummary(headsUpTimeOut);
     }
 
     private void updateTimeoutPreferenceDescription(long currentTimeout) {
@@ -399,7 +455,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     @Override
     public boolean onPreferenceChange(Preference preference, Object objValue) {
         final String key = preference.getKey();
-        if (KEY_SCREEN_TIMEOUT.equals(key)) {
+        if (preference == mScreenTimeoutPreference) {
             int value = Integer.parseInt((String) objValue);
             try {
                 Settings.System.putInt(getContentResolver(), SCREEN_OFF_TIMEOUT, value);
@@ -407,15 +463,43 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             } catch (NumberFormatException e) {
                 Log.e(TAG, "could not persist screen timeout setting", e);
             }
-        }
-        if (KEY_FONT_SIZE.equals(key)) {
+            return true;
+        } else if (preference == mFontSizePref) {
             writeFontSizePreference(objValue);
-        }
-        if (KEY_NAV_BAR_POSITION.equals(key)) {
+            return true;
+        } else if (preference == mNavigationBarPositionPref) {
             int value = Integer.valueOf((String) objValue);
             Settings.Global.putInt(getContentResolver(), Settings.Global.NAV_BAR_POSITION, value);
             updateNavigationBarPosition(value);
+            return true;
+        } else if (preference == mHeadsUpSnoozeTime) {
+            int headsUpSnoozeTime = Integer.valueOf((String) objValue);
+            Settings.System.putInt(getContentResolver(),
+                    Settings.System.HEADS_UP_SNOOZE_TIME,
+                    headsUpSnoozeTime);
+            updateHeadsUpSnoozeTimeSummary(headsUpSnoozeTime);
+            return true;
+        } else if (preference == mHeadsUpTimeOut) {
+            int headsUpTimeOut = Integer.valueOf((String) objValue);
+            Settings.System.putInt(getContentResolver(), Settings.System.HEADS_UP_NOTIFCATION_DECAY,
+                    headsUpTimeOut);
+            updateHeadsUpTimeOutSummary(headsUpTimeOut);
+            return true;
+        } else if (preference == mHeadsUpExpanded) {
+            Settings.System.putIntForUser(getContentResolver(), Settings.System.HEADS_UP_EXPANDED,
+                    (Boolean) objValue ? 1 : 0, UserHandle.USER_CURRENT);
+            return true;
+        } else if (preference == mHeadsUpShowUpdates) {
+            Settings.System.putIntForUser(getContentResolver(), Settings.System.HEADS_UP_SHOW_UPDATE,
+                    (Boolean) objValue ? 1 : 0, UserHandle.USER_CURRENT);
+            return true;
+        } else if (preference == mHeadsUpGravity) {
+            Settings.System.putIntForUser(getContentResolver(),
+                    Settings.System.HEADS_UP_GRAVITY_BOTTOM,
+                    (Boolean) objValue ? 1 : 0, UserHandle.USER_CURRENT);
+            return true;
         }
+
 
         return true;
     }
@@ -446,6 +530,24 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             return DEVICE_HYBRID;
         } else {
             return DEVICE_TABLET;
+        }
+    }
+
+    private void updateHeadsUpSnoozeTimeSummary(int value) {
+        String summary = value != 0
+                ? getResources().getString(R.string.heads_up_snooze_summary, value / 60 / 1000)
+                : getResources().getString(R.string.heads_up_snooze_disabled_summary);
+        mHeadsUpSnoozeTime.setSummary(summary);
+    }
+
+    private void updateHeadsUpTimeOutSummary(int value) {
+        String summary = getResources().getString(R.string.heads_up_time_out_summary,
+                value / 1000);
+        if (value == 0) {
+            mHeadsUpTimeOut.setSummary(
+                    getResources().getString(R.string.heads_up_time_out_never_summary));
+        } else {
+            mHeadsUpTimeOut.setSummary(summary);
         }
     }
 
