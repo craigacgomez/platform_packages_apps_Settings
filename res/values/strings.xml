@@ -5989,4 +5989,8 @@
 
     <!-- Device hostname editor -->
     <string name="device_hostname">Device hostname</string>
+
+    <!-- Rescan media volume -->
+    <string name="storage_rescan_media">Rescan media for the storage volume</string>
+    <string name="storage_rescan_media_complete">Scan completed</string>
 </resources>
