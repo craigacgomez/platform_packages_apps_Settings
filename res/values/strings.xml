@@ -5982,4 +5982,7 @@
     <!-- App Ops -->
     <string name="app_ops_title">App Ops</string>
     <string name="app_ops_summary">Fine-grained application permission controls</string>
+
+    <!-- Device hostname editor -->
+    <string name="device_hostname">Device hostname</string>
 </resources>
