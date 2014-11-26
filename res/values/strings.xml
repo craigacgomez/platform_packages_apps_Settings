@@ -5997,4 +5997,10 @@
     <!-- Statusbar native battery percent -->
     <string name="status_bar_native_battery_percentage_title">Battery percentage</string>
     <string name="status_bar_native_battery_percentage_summary">Display battery percentage on the status bar battery icon</string>
+
+    <!--- Volume key cursor control -->
+    <string name="volume_key_cursor_control_title">Volume key cursor control</string>
+    <string name="volume_key_cursor_control_off">Disabled</string>
+    <string name="volume_key_cursor_control_on">Volume up/down moves cursor left/right</string>
+    <string name="volume_key_cursor_control_on_reverse">Volume up/down moves cursor right/left</string>
 </resources>

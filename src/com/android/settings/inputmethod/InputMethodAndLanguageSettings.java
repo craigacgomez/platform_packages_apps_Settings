@@ -88,6 +88,7 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
     private static final String KEY_INPUT_METHOD_SELECTOR = "input_method_selector";
     private static final String KEY_USER_DICTIONARY_SETTINGS = "key_user_dictionary_settings";
     private static final String KEY_PREVIOUSLY_ENABLED_SUBTYPES = "previously_enabled_subtypes";
+    private static final String KEY_VOLUME_KEY_CURSOR_CONTROL = "volume_key_cursor_control";
     // false: on ICS or later
     private static final boolean SHOW_INPUT_METHOD_SWITCHER_SETTINGS = false;
 
@@ -107,6 +108,7 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
     private Intent mIntentWaitingForResult;
     private InputMethodSettingValuesWrapper mInputMethodSettingValues;
     private DevicePolicyManager mDpm;
+    private ListPreference mVolumeKeyCursorControl;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -190,6 +192,15 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
                 startingIntent.getParcelableExtra(Settings.EXTRA_INPUT_DEVICE_IDENTIFIER);
         if (mShowsOnlyFullImeAndKeyboardList && identifier != null) {
             showKeyboardLayoutDialog(identifier);
+        }
+
+        // Volume key cursor control
+        mVolumeKeyCursorControl = (ListPreference) findPreference(VOLUME_KEY_CURSOR_CONTROL);
+        if (mVolumeKeyCursorControl != null) {
+            mVolumeKeyCursorControl.setOnPreferenceChangeListener(this);
+            mVolumeKeyCursorControl.setValue(Integer.toString(Settings.System.getInt(getActivity()
+                    .getContentResolver(), Settings.System.VOLUME_KEY_CURSOR_CONTROL, 0)));
+            mVolumeKeyCursorControl.setSummary(mVolumeKeyCursorControl.getEntry());
         }
     }
 
@@ -375,6 +386,17 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
                 if (value instanceof String) {
                     saveInputMethodSelectorVisibility((String)value);
                 }
+            }
+        }
+        if (preference == mVolumeKeyCursorControl) {
+            if (value instanceof String) {
+                String volumeKeyCursorControl = (String) value;
+                int volumeKeyCursorControlValue = Integer.parseInt(volumeKeyCursorControl);
+                        Settings.System.putInt(getActivity().getContentResolver(),
+                        Settings.System.VOLUME_KEY_CURSOR_CONTROL, volumeKeyCursorControlValue);
+                int volumeKeyCursorControlIndex = mVolumeKeyCursorControl.findIndexOfValue(volumeKeyCursorControl);
+                mVolumeKeyCursorControl.setSummary(mVolumeKeyCursorControl.getEntries()[volumeKeyCursorControlIndex]);
+                return true;
             }
         }
         return false;
