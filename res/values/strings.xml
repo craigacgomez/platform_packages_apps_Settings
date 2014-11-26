@@ -5993,4 +5993,8 @@
     <!-- Rescan media volume -->
     <string name="storage_rescan_media">Rescan media for the storage volume</string>
     <string name="storage_rescan_media_complete">Scan completed</string>
+
+    <!-- Statusbar native battery percent -->
+    <string name="status_bar_native_battery_percentage_title">Battery percentage</string>
+    <string name="status_bar_native_battery_percentage_summary">Display battery percentage on the status bar battery icon</string>
 </resources>
