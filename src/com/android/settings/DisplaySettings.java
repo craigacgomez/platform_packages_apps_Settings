@@ -172,7 +172,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
 
         // Native battery percentage
         mStatusBarNativeBatteryPercentage = (CheckBoxPreference) getPreferenceScreen()
-                .findPreference(STATUS_BAR_NATIVE_BATTERY_PERCENTAGE);
+                .findPreference(KEY_STATUS_BAR_NATIVE_BATTERY_PERCENTAGE);
         mStatusBarNativeBatteryPercentage.setChecked((Settings.System.getInt(getActivity()
                 .getApplicationContext().getContentResolver(),
                 Settings.System.STATUS_BAR_NATIVE_BATTERY_PERCENTAGE, 0) == 1));
