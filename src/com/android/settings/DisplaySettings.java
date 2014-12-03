@@ -43,6 +43,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.SystemProperties;
+import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -52,6 +53,7 @@ import android.provider.SearchIndexableResource;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.WindowManagerGlobal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +74,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private static final String KEY_AUTO_ROTATE = "auto_rotate";
     private static final String KEY_STATUS_BAR_NATIVE_BATTERY_PERCENTAGE = "status_bar_native_battery_percentage";
     private static final String KEY_VOLUME_WAKE = "pref_volume_wake";
+    private static final String KEY_NAV_BAR_POSITION = "nav_bar_position";
 
     private static final int DLG_GLOBAL_CHANGE_WARNING = 1;
 
@@ -86,6 +89,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private SwitchPreference mAutoBrightnessPreference;
     private CheckBoxPreference mStatusBarNativeBatteryPercentage;
     private SwitchPreference mVolumeWake;
+    private ListPreference mNavigationBarPositionPref;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -181,6 +185,17 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         mVolumeWake.setChecked(Settings.System.getInt(resolver,
                 Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
         mVolumeWake.setOnPreferenceChangeListener(this);
+
+        if (hasMovableNavigationBar(activity)) {
+            int mNavigationBarPositionValue = Settings.Global.getInt(resolver,
+                    Settings.Global.NAV_BAR_POSITION, 0);
+            mNavigationBarPositionPref = (ListPreference) findPreference(KEY_NAV_BAR_POSITION);
+            mNavigationBarPositionPref.setOnPreferenceChangeListener(this);
+            mNavigationBarPositionPref.setValue(String.valueOf(mNavigationBarPositionValue));
+            updateNavigationBarPositionSummary(mNavigationBarPositionValue);
+        } else {
+            getPreferenceScreen().removePreference(findPreference(KEY_NAV_BAR_POSITION));
+        }
     }
 
     private static boolean allowAllRotations(Context context) {
@@ -200,6 +215,20 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
                     com.android.internal.R.string.config_dozeComponent);
         }
         return !TextUtils.isEmpty(name);
+    }
+
+    private static boolean hasMovableNavigationBar(Context context) {
+        try {
+            if (WindowManagerGlobal.getWindowManagerService().hasNavigationBar()) {
+               return context.getResources().getBoolean(
+                    com.android.internal.R.bool.config_hasMovableNavigationBar);
+            } else {
+                return false;
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error getting navigation bar status");
+            return false;
+        }
     }
 
     private static boolean isAutomaticBrightnessAvailable(Resources res) {
@@ -364,6 +393,17 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         }
     }
 
+    private void updateNavigationBarPositionSummary(int value) {
+        Resources res = getResources();
+        if (value == 0) {
+            mNavigationBarPositionPref.setSummary(res.getString(R.string.navigation_bar_default));
+        } else if (value == 1) {
+            mNavigationBarPositionPref.setSummary(res.getString(R.string.navigation_bar_left));
+        } else if (value == 2) {
+            mNavigationBarPositionPref.setSummary(res.getString(R.string.navigation_bar_right));
+        }
+    }
+
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         if (preference == mStatusBarNativeBatteryPercentage) {
@@ -407,6 +447,11 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             Settings.System.putInt(getContentResolver(),
                     Settings.System.VOLUME_WAKE_SCREEN,
                     (Boolean) objValue ? 1 : 0);
+        }
+        if (KEY_NAV_BAR_POSITION.equals(key)) {
+            int value = Integer.valueOf((String) objValue);
+            Settings.Global.putInt(getContentResolver(), Settings.Global.NAV_BAR_POSITION, value);
+            updateNavigationBarPositionSummary(value);
         }
         return true;
     }
