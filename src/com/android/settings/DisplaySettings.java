@@ -28,6 +28,9 @@ import static android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE;
 import static android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC;
 import static android.provider.Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL;
 import static android.provider.Settings.System.SCREEN_OFF_TIMEOUT;
+import static android.provider.Settings.System.STATUS_BAR_NATIVE_BATTERY_PERCENTAGE;
+import static android.provider.Settings.System.VOLUME_WAKE_SCREEN;
+import static android.provider.Settings.Global.NAV_BAR_POSITION;
 
 import android.app.Activity;
 import android.app.ActivityManagerNative;
@@ -43,7 +46,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.os.SystemProperties;
-import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
@@ -87,7 +89,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private SwitchPreference mLiftToWakePreference;
     private SwitchPreference mDozePreference;
     private SwitchPreference mAutoBrightnessPreference;
-    private CheckBoxPreference mStatusBarNativeBatteryPercentage;
+    private SwitchPreference mStatusBarNativeBatteryPercentage;
     private SwitchPreference mVolumeWake;
     private ListPreference mNavigationBarPositionPref;
 
@@ -175,20 +177,20 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         }
 
         // Native battery percentage
-        mStatusBarNativeBatteryPercentage = (CheckBoxPreference) getPreferenceScreen()
-                .findPreference(KEY_STATUS_BAR_NATIVE_BATTERY_PERCENTAGE);
-        mStatusBarNativeBatteryPercentage.setChecked((Settings.System.getInt(getActivity()
-                .getApplicationContext().getContentResolver(),
-                Settings.System.STATUS_BAR_NATIVE_BATTERY_PERCENTAGE, 0) == 1));
+        mStatusBarNativeBatteryPercentage = (SwitchPreference) findPreference
+                (KEY_STATUS_BAR_NATIVE_BATTERY_PERCENTAGE);
+        mStatusBarNativeBatteryPercentage.setChecked(resolver,
+                                             STATUS_BAR_NATIVE_BATTERY_PERCENTAGE, 0) == 1));
+        mStatusBarNativeBatteryPercentage.setOnPreferenceChangeListener(this);
 
+        // Volume key wake
         mVolumeWake = (SwitchPreference) findPreference(KEY_VOLUME_WAKE);
-        mVolumeWake.setChecked(Settings.System.getInt(resolver,
-                Settings.System.VOLUME_WAKE_SCREEN, 0) == 1);
+        mVolumeWake.setChecked(Settings.System.getInt(resolver, VOLUME_WAKE_SCREEN, 0) == 1);
         mVolumeWake.setOnPreferenceChangeListener(this);
 
+        // Movable navigation bar
         if (hasMovableNavigationBar(activity)) {
-            int mNavigationBarPositionValue = Settings.Global.getInt(resolver,
-                    Settings.Global.NAV_BAR_POSITION, 0);
+            int mNavigationBarPositionValue = Settings.Global.getInt(resolver, NAV_BAR_POSITION, 0);
             mNavigationBarPositionPref = (ListPreference) findPreference(KEY_NAV_BAR_POSITION);
             mNavigationBarPositionPref.setOnPreferenceChangeListener(this);
             mNavigationBarPositionPref.setValue(String.valueOf(mNavigationBarPositionValue));
@@ -406,12 +408,6 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
 
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
-        if (preference == mStatusBarNativeBatteryPercentage) {
-            boolean value = mStatusBarNativeBatteryPercentage.isChecked();
-            Settings.System.putInt(getActivity().getApplicationContext().getContentResolver(),
-                    Settings.System.STATUS_BAR_NATIVE_BATTERY_PERCENTAGE, value ? 1 : 0);
-            return true;
-        }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
     }
 
@@ -444,14 +440,19 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             Settings.Secure.putInt(getContentResolver(), DOZE_ENABLED, value ? 1 : 0);
         }
         if (KEY_VOLUME_WAKE.equals(key)) {
-            Settings.System.putInt(getContentResolver(),
-                    Settings.System.VOLUME_WAKE_SCREEN,
-                    (Boolean) objValue ? 1 : 0);
+            boolean value = (Boolean) objValue;
+            Settings.System.putInt(getContentResolver(), VOLUME_WAKE_SCREEN, value ? 1 : 0);
         }
         if (KEY_NAV_BAR_POSITION.equals(key)) {
             int value = Integer.valueOf((String) objValue);
-            Settings.Global.putInt(getContentResolver(), Settings.Global.NAV_BAR_POSITION, value);
+            Settings.Global.putInt(getContentResolver(), NAV_BAR_POSITION, value);
             updateNavigationBarPositionSummary(value);
+        }
+        if (preference == mStatusBarNativeBatteryPercentage) {
+            boolean value = mStatusBarNativeBatteryPercentage.isChecked();
+            Settings.System.putInt(getContentResolver(),
+                                   STATUS_BAR_NATIVE_BATTERY_PERCENTAGE, value ? 1 : 0);
+            return true;
         }
         return true;
     }

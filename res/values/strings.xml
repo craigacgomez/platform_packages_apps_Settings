@@ -6051,44 +6051,44 @@
    <string name="slot_number">(Slot<xliff:g id="slot_num">%1$d</xliff:g>)</string>
 
    <!-- App Ops -->
-    <string name="app_ops_title">App Ops</string>
-    <string name="app_ops_summary">Fine-grained application permission controls</string>
+   <string name="app_ops_title">App Ops</string>
+   <string name="app_ops_summary">Fine-grained application permission controls</string>
 
-    <!-- Back long-press kill -->
-    <string name="kill_app_longpress_back">Kill app back button</string>
-    <string name="kill_app_longpress_back_summary">Kill the foreground app by long-pressing the back key</string>
+   <!-- Back long-press kill -->
+   <string name="kill_app_longpress_back">Kill app back button</string>
+   <string name="kill_app_longpress_back_summary">Kill the foreground app by long-pressing the back key</string>
 
-    <!-- Device hostname editor -->
-    <string name="device_hostname">Device hostname</string>
+   <!-- Device hostname editor -->
+   <string name="device_hostname">Device hostname</string>
 
-    <!-- Rescan media volume -->
-    <string name="storage_rescan_media">Rescan media for the storage volume</string>
-    <string name="storage_rescan_media_complete">Scan completed</string>
+   <!-- Rescan media volume -->
+   <string name="storage_rescan_media">Rescan media for the storage volume</string>
+   <string name="storage_rescan_media_complete">Scan completed</string>
 
-    <!-- Statusbar native battery percent -->
-    <string name="status_bar_native_battery_percentage_title">Battery percentage</string>
-    <string name="status_bar_native_battery_percentage_summary">Display battery percentage on the status bar battery icon</string>
+   <!-- Statusbar native battery percent -->
+   <string name="status_bar_native_battery_percentage_title">Battery percentage</string>
+   <string name="status_bar_native_battery_percentage_summary">Display battery percentage on the status bar battery icon</string>
 
-    <!--- Volume key cursor control -->
-    <string name="volume_key_cursor_control_title">Volume key cursor control</string>
-    <string name="volume_key_cursor_control_off">Disabled</string>
-    <string name="volume_key_cursor_control_on">Volume up/down moves cursor left/right</string>
-    <string name="volume_key_cursor_control_on_reverse">Volume up/down moves cursor right/left</string>
+   <!--- Volume key cursor control -->
+   <string name="volume_key_cursor_control_title">Volume key cursor control</string>
+   <string name="volume_key_cursor_control_off">Disabled</string>
+   <string name="volume_key_cursor_control_on">Volume up/down moves cursor left/right</string>
+   <string name="volume_key_cursor_control_on_reverse">Volume up/down moves cursor right/left</string>
 
-    <!--- Volume rocker wake -->
-    <string name="pref_volume_wake_title">Volume rocker wake</string>
-    <string name="pref_volume_wake_summary">Pressing the volume rocker up/down will wake the device</string>
+   <!--- Volume rocker wake -->
+   <string name="pref_volume_wake_title">Volume rocker wake</string>
+   <string name="pref_volume_wake_summary">Pressing the volume rocker up/down will wake the device</string>
 
-    <!-- Per-app keyguard notification controls -->
-    <string name="app_notification_show_on_keyguard_title">Show on lockscreen</string>
-    <string name="app_notification_show_on_keyguard_summary">Show notifications from this app on the lockscreen</string>
-    <string name="app_notification_no_ongoing_on_keyguard_title">Disable ongoing on lockscreen</string>
-    <string name="app_notification_no_ongoing_on_keyguard_summary">Never show ongoing notifications from this app on the lockscreen</string>
+   <!-- Per-app keyguard notification controls -->
+   <string name="app_notification_show_on_keyguard_title">Show on lockscreen</string>
+   <string name="app_notification_show_on_keyguard_summary">Show notifications from this app on the lockscreen</string>
+   <string name="app_notification_no_ongoing_on_keyguard_title">Disable ongoing on lockscreen</string>
+   <string name="app_notification_no_ongoing_on_keyguard_summary">Never show ongoing notifications from this app on the lockscreen</string>
 
-    <!-- Navigation bar position -->
-    <string name="nav_bar_position">Navigation Bar Position</string>
-    <string name="navigation_bar_default">Default (Center)</string>
-    <string name="navigation_bar_left">Left</string>
-    <string name="navigation_bar_right">Right</string>
+   <!-- Navigation bar position -->
+   <string name="nav_bar_position">Navigation Bar Position</string>
+   <string name="navigation_bar_default">Default (Center)</string>
+   <string name="navigation_bar_left">Left</string>
+   <string name="navigation_bar_right">Right</string>
 
 </resources>

@@ -231,10 +231,8 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
 
     private ListPreference mAppProcessLimit;
 
-    private CheckBoxPreference mShowAllANRs;
-    private CheckBoxPreference mKillAppLongpressBack;
-
     private SwitchPreference mShowAllANRs;
+    private SwitchPreference mKillAppLongpressBack;
 
     private PreferenceScreen mProcessStats;
     private final ArrayList<Preference> mAllPrefs = new ArrayList<Preference>();
@@ -362,8 +360,8 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
         mShowAllANRs = (SwitchPreference) findPreference(
                 SHOW_ALL_ANRS_KEY);
         mAllPrefs.add(mShowAllANRs);
-        mKillAppLongpressBack = findAndInitCheckboxPref(KILL_APP_LONGPRESS_BACK);
         mResetSwitchPrefs.add(mShowAllANRs);
+        mKillAppLongpressBack = findAndInitSwitchPref(KILL_APP_LONGPRESS_BACK);
 
         Preference hdcpChecking = findPreference(HDCP_CHECKING_KEY);
         if (hdcpChecking != null) {
@@ -1312,8 +1310,8 @@ public class DevelopmentSettings extends SettingsPreferenceFragment
     }
 
     private void updateKillAppLongpressBackOptions() {
-        mKillAppLongpressBack.setChecked(Settings.Secure.getInt(
-            getActivity().getContentResolver(), Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) != 0);
+        updateSwitchPreference(mKillAppLongpressBack, Settings.Secure.getInt(
+                getActivity().getContentResolver(), Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) != 0);
     }
 
     @Override
