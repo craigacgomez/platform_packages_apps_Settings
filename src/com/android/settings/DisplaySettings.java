@@ -179,8 +179,8 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         // Native battery percentage
         mStatusBarNativeBatteryPercentage = (SwitchPreference) findPreference
                 (KEY_STATUS_BAR_NATIVE_BATTERY_PERCENTAGE);
-        mStatusBarNativeBatteryPercentage.setChecked(resolver,
-                                             STATUS_BAR_NATIVE_BATTERY_PERCENTAGE, 0) == 1));
+        mStatusBarNativeBatteryPercentage.setChecked(Settings.System.getInt(resolver,
+                                             STATUS_BAR_NATIVE_BATTERY_PERCENTAGE, 0) == 1);
         mStatusBarNativeBatteryPercentage.setOnPreferenceChangeListener(this);
 
         // Volume key wake
@@ -448,11 +448,10 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             Settings.Global.putInt(getContentResolver(), NAV_BAR_POSITION, value);
             updateNavigationBarPositionSummary(value);
         }
-        if (preference == mStatusBarNativeBatteryPercentage) {
-            boolean value = mStatusBarNativeBatteryPercentage.isChecked();
+        if (KEY_STATUS_BAR_NATIVE_BATTERY_PERCENTAGE.equals(key)) {
+            boolean value = (Boolean) objValue;
             Settings.System.putInt(getContentResolver(),
                                    STATUS_BAR_NATIVE_BATTERY_PERCENTAGE, value ? 1 : 0);
-            return true;
         }
         return true;
     }
