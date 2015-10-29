@@ -7036,4 +7036,10 @@
 
     <!-- Description of feature to change color setting for the display [CHAR LIMIT=NONE] -->
     <string name="picture_color_mode_desc">Use sRGB</string>
+
+    <!-- On-screen navigation bar position -->
+    <string name="nav_bar_position">On-screen navigation bar buttons position</string>
+    <string name="navigation_bar_default">Default (Center)</string>
+    <string name="navigation_bar_left">Left</string>
+    <string name="navigation_bar_right">Right</string>
 </resources>
