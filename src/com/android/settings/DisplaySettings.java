@@ -54,6 +54,7 @@ import android.provider.SearchIndexableResource;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.WindowManagerGlobal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +75,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private static final String KEY_AUTO_BRIGHTNESS = "auto_brightness";
     private static final String KEY_AUTO_ROTATE = "auto_rotate";
     private static final String KEY_NIGHT_MODE = "night_mode";
+    private static final String KEY_NAV_BAR_POSITION = "nav_bar_position";
 
     private static final int DLG_GLOBAL_CHANGE_WARNING = 1;
 
@@ -88,6 +90,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private SwitchPreference mDozePreference;
     private SwitchPreference mTapToWakePreference;
     private SwitchPreference mAutoBrightnessPreference;
+    private ListPreference mNavigationBarPositionPreference;
 
     @Override
     protected int getMetricsCategory() {
@@ -195,6 +198,17 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             mNightModePreference.setValue(String.valueOf(currentNightMode));
             mNightModePreference.setOnPreferenceChangeListener(this);
         }
+
+        if (hasMovableNavigationBar(activity)) {
+            int mNavigationBarPositionValue = Settings.Global.getInt(resolver,
+                    Settings.Global.NAV_BAR_POSITION, 0);
+            mNavigationBarPositionPreference = (ListPreference) findPreference(KEY_NAV_BAR_POSITION);
+            mNavigationBarPositionPreference.setValue(String.valueOf(mNavigationBarPositionValue));
+            mNavigationBarPositionPreference.setOnPreferenceChangeListener(this);
+            updateNavigationBarPositionSummary(mNavigationBarPositionValue);
+        } else {
+            removePreference(KEY_NAV_BAR_POSITION);
+        }
     }
 
     private static boolean allowAllRotations(Context context) {
@@ -222,6 +236,20 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
 
     private static boolean isAutomaticBrightnessAvailable(Resources res) {
         return res.getBoolean(com.android.internal.R.bool.config_automatic_brightness_available);
+    }
+
+    private static boolean hasMovableNavigationBar(Context context) {
+        try {
+            if (WindowManagerGlobal.getWindowManagerService().hasNavigationBar()) {
+               return context.getResources().getBoolean(
+                    com.android.internal.R.bool.config_hasMovableNavigationBar);
+            } else {
+                return false;
+            }
+        } catch (RemoteException e) {
+            Log.e(TAG, "Error getting navigation bar status");
+            return false;
+        }
     }
 
     private void updateTimeoutPreferenceDescription(long currentTimeout) {
@@ -370,6 +398,13 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             int value = Settings.Secure.getInt(getContentResolver(), DOUBLE_TAP_TO_WAKE, 0);
             mTapToWakePreference.setChecked(value != 0);
         }
+
+        if (mNavigationBarPositionPreference != null) {
+            int mNavigationBarPositionValue = Settings.Global.getInt(resolver,
+                    Settings.Global.NAV_BAR_POSITION, 0);
+            mNavigationBarPositionPreference.setValue(String.valueOf(mNavigationBarPositionValue));
+            updateNavigationBarPositionSummary(mNavigationBarPositionValue);
+        }
     }
 
     private void updateScreenSaverSummary() {
@@ -385,6 +420,17 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             ActivityManagerNative.getDefault().updatePersistentConfiguration(mCurConfig);
         } catch (RemoteException e) {
             Log.w(TAG, "Unable to save font size");
+        }
+    }
+
+    private void updateNavigationBarPositionSummary(int value) {
+        Resources res = getResources();
+        if (value == 0) {
+            mNavigationBarPositionPref.setSummary(res.getString(R.string.navigation_bar_default));
+        } else if (value == 1) {
+            mNavigationBarPositionPref.setSummary(res.getString(R.string.navigation_bar_left));
+        } else if (value == 2) {
+            mNavigationBarPositionPref.setSummary(res.getString(R.string.navigation_bar_right));
         }
     }
 
@@ -434,6 +480,11 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
             } catch (NumberFormatException e) {
                 Log.e(TAG, "could not persist night mode setting", e);
             }
+        }
+        if (preference == mNavigationBarPositionPreference) {
+            int value = Integer.parseInt((String) objValue);
+            Settings.Global.putInt(getContentResolver(), Settings.Global.NAV_BAR_POSITION, value);
+            updateNavigationBarPositionSummary(value);
         }
         return true;
     }

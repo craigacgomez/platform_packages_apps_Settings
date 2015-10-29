@@ -92,6 +92,14 @@
                 android:key="auto_rotate"
                 android:title="@string/display_auto_rotate_title" />
 
+        <ListPreference
+                android:key="nav_bar_position"
+                android:title="@string/nav_bar_position"
+                android:entries="@array/nav_bar_position_entries"
+                android:entryValues="@array/nav_bar_position_values"
+                android:defaultValue="0"
+                android:persistent="false" />
+
         <PreferenceScreen
                 android:key="wifi_display"
                 android:title="@string/wifi_display_settings_title"
