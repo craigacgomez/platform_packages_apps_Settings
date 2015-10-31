@@ -7042,4 +7042,7 @@
     <string name="navigation_bar_default">Default (Center)</string>
     <string name="navigation_bar_left">Left</string>
     <string name="navigation_bar_right">Right</string>
+
+    <!-- User-defined device hostname -->
+    <string name="device_hostname">Device hostname</string>
 </resources>
