@@ -85,6 +85,7 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
     private static final String KEY_USER_DICTIONARY_SETTINGS = "key_user_dictionary_settings";
     private static final String KEY_PREVIOUSLY_ENABLED_SUBTYPES = "previously_enabled_subtypes";
     private static final String KEY_VOLUME_ROCKER_CURSOR_CONTROL = "volume_rocker_cursor_control";
+    private static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
     // false: on ICS or later
     private static final boolean SHOW_INPUT_METHOD_SWITCHER_SETTINGS = false;
 
@@ -105,6 +106,7 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
     private Intent mIntentWaitingForResult;
     private InputMethodSettingValuesWrapper mInputMethodSettingValues;
     private DevicePolicyManager mDpm;
+    private SwitchPreference mKillAppLongpressBackPref;
 
     @Override
     protected int getMetricsCategory() {
@@ -203,6 +205,9 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
                     .getContentResolver(), Settings.System.VOLUME_ROCKER_CURSOR_CONTROL, 0)));
             mVolumeRockerCursorControlPref.setSummary(mVolumeRockerCursorControlPref.getEntry());
         }
+
+        mKillAppLongpressBackPref = (SwitchPreference) findPreference(KILL_APP_LONGPRESS_BACK);
+        mKillAppLongpressBackPref.setOnPreferenceChangeListener(this);
     }
 
     private void updateInputMethodSelectorSummary(int value) {
@@ -399,6 +404,10 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
                 mVolumeRockerCursorControlPref.setSummary(mVolumeRockerCursorControlPref.getEntries()[volumeRockerCursorControlIndex]);
                 return true;
             }
+        } if (preference == mKillAppLongpressBackPref) {
+            Settings.Secure.putInt(getContentResolver(), KILL_APP_LONGPRESS_BACK,
+                    (boolean) value ? 1 : 0);
+            return true;
         }
         return false;
     }

@@ -61,6 +61,12 @@
             android:title="@string/volume_rocker_cursor_control_title"
             />
 
+    <!-- Back long-press kill -->
+    <SwitchPreference
+            android:key="kill_app_longpress_back"
+            android:title="@string/kill_app_longpress_back"
+            android:persistent="false" />
+
     <PreferenceCategory
             android:key="hard_keyboard"
             android:title="@string/builtin_keyboard_settings_title"
