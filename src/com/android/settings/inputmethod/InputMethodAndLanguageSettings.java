@@ -84,11 +84,13 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
     private static final String KEY_INPUT_METHOD_SELECTOR = "input_method_selector";
     private static final String KEY_USER_DICTIONARY_SETTINGS = "key_user_dictionary_settings";
     private static final String KEY_PREVIOUSLY_ENABLED_SUBTYPES = "previously_enabled_subtypes";
+    private static final String KEY_VOLUME_ROCKER_CURSOR_CONTROL = "volume_rocker_cursor_control";
     // false: on ICS or later
     private static final boolean SHOW_INPUT_METHOD_SWITCHER_SETTINGS = false;
 
     private int mDefaultInputMethodSelectorVisibility = 0;
     private ListPreference mShowInputMethodSelectorPref;
+    private ListPreference mVolumeRockerCursorControlPref;
     private PreferenceCategory mKeyboardSettingsCategory;
     private PreferenceCategory mHardKeyboardCategory;
     private PreferenceCategory mGameControllerCategory;
@@ -191,6 +193,15 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
                 startingIntent.getParcelableExtra(Settings.EXTRA_INPUT_DEVICE_IDENTIFIER);
         if (mShowsOnlyFullImeAndKeyboardList && identifier != null) {
             showKeyboardLayoutDialog(identifier);
+        }
+
+        // Volume rocker cursor control
+        mVolumeRockerCursorControlPref = (ListPreference) findPreference(VOLUME_ROCKER_CURSOR_CONTROL);
+        if (mVolumeRockerCursorControlPref != null) {
+            mVolumeRockerCursorControlPref.setOnPreferenceChangeListener(this);
+            mVolumeRockerCursorControlPref.setValue(Integer.toString(Settings.System.getInt(getActivity()
+                    .getContentResolver(), Settings.System.VOLUME_ROCKER_CURSOR_CONTROL, 0)));
+            mVolumeRockerCursorControlPref.setSummary(mVolumeRockerCursorControlPref.getEntry());
         }
     }
 
@@ -377,6 +388,16 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
                 if (value instanceof String) {
                     saveInputMethodSelectorVisibility((String)value);
                 }
+            }
+        }
+        if (preference == mVolumeRockerCursorControlPref) {
+            if (value instanceof String) {
+                int volumeRockerCursorControlValue = Integer.parseInt((String) value);
+                Settings.System.putInt(getActivity().getContentResolver(),
+                        Settings.System.VOLUME_ROCKER_CURSOR_CONTROL, volumeRockerCursorControlValue);
+                int volumeRockerCursorControlIndex = mVolumeRockerCursorControlPref.findIndexOfValue((String) value);
+                mVolumeRockerCursorControlPref.setSummary(mVolumeRockerCursorControlPref.getEntries()[volumeRockerCursorControlIndex]);
+                return true;
             }
         }
         return false;
