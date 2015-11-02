@@ -85,7 +85,7 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
     private static final String KEY_USER_DICTIONARY_SETTINGS = "key_user_dictionary_settings";
     private static final String KEY_PREVIOUSLY_ENABLED_SUBTYPES = "previously_enabled_subtypes";
     private static final String KEY_VOLUME_ROCKER_CURSOR_CONTROL = "volume_rocker_cursor_control";
-    private static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
+    private static final String KEY_KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
     // false: on ICS or later
     private static final boolean SHOW_INPUT_METHOD_SWITCHER_SETTINGS = false;
 
@@ -198,7 +198,7 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
         }
 
         // Volume rocker cursor control
-        mVolumeRockerCursorControlPref = (ListPreference) findPreference(VOLUME_ROCKER_CURSOR_CONTROL);
+        mVolumeRockerCursorControlPref = (ListPreference) findPreference(KEY_VOLUME_ROCKER_CURSOR_CONTROL);
         if (mVolumeRockerCursorControlPref != null) {
             mVolumeRockerCursorControlPref.setOnPreferenceChangeListener(this);
             mVolumeRockerCursorControlPref.setValue(Integer.toString(Settings.System.getInt(getActivity()
@@ -206,8 +206,11 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
             mVolumeRockerCursorControlPref.setSummary(mVolumeRockerCursorControlPref.getEntry());
         }
 
-        mKillAppLongpressBackPref = (SwitchPreference) findPreference(KILL_APP_LONGPRESS_BACK);
+        mKillAppLongpressBackPref = (SwitchPreference) findPreference(KEY_KILL_APP_LONGPRESS_BACK);
         mKillAppLongpressBackPref.setOnPreferenceChangeListener(this);
+        mKillAppLongpressBackPref.setChecked(
+                Settings.Secure.getInt(getContentResolver(),
+                        Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
     }
 
     private void updateInputMethodSelectorSummary(int value) {
@@ -405,8 +408,9 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
                 return true;
             }
         } if (preference == mKillAppLongpressBackPref) {
-            Settings.Secure.putInt(getContentResolver(), KILL_APP_LONGPRESS_BACK,
-                    (boolean) value ? 1 : 0);
+            boolean boolValue = (Boolean) value;
+            Settings.Secure.putInt(getContentResolver(), Settings.Secure.KILL_APP_LONGPRESS_BACK,
+                    boolValue ? 1 : 0);
             return true;
         }
         return false;

@@ -400,7 +400,7 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
         }
 
         if (mNavigationBarPositionPreference != null) {
-            int mNavigationBarPositionValue = Settings.Global.getInt(resolver,
+            int mNavigationBarPositionValue = Settings.Global.getInt(getContentResolver(),
                     Settings.Global.NAV_BAR_POSITION, 0);
             mNavigationBarPositionPreference.setValue(String.valueOf(mNavigationBarPositionValue));
             updateNavigationBarPositionSummary(mNavigationBarPositionValue);
@@ -426,11 +426,11 @@ public class DisplaySettings extends SettingsPreferenceFragment implements
     private void updateNavigationBarPositionSummary(int value) {
         Resources res = getResources();
         if (value == 0) {
-            mNavigationBarPositionPref.setSummary(res.getString(R.string.navigation_bar_default));
+            mNavigationBarPositionPreference.setSummary(res.getString(R.string.navigation_bar_default));
         } else if (value == 1) {
-            mNavigationBarPositionPref.setSummary(res.getString(R.string.navigation_bar_left));
+            mNavigationBarPositionPreference.setSummary(res.getString(R.string.navigation_bar_left));
         } else if (value == 2) {
-            mNavigationBarPositionPref.setSummary(res.getString(R.string.navigation_bar_right));
+            mNavigationBarPositionPreference.setSummary(res.getString(R.string.navigation_bar_right));
         }
     }
 
