@@ -206,11 +206,14 @@ public class InputMethodAndLanguageSettings extends SettingsPreferenceFragment
             mVolumeRockerCursorControlPref.setSummary(mVolumeRockerCursorControlPref.getEntry());
         }
 
+        // Long-press back to kill foreground app
         mKillAppLongpressBackPref = (SwitchPreference) findPreference(KEY_KILL_APP_LONGPRESS_BACK);
-        mKillAppLongpressBackPref.setOnPreferenceChangeListener(this);
-        mKillAppLongpressBackPref.setChecked(
-                Settings.Secure.getInt(getContentResolver(),
-                        Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
+        if (mKillAppLongpressBackPref != null) {
+            mKillAppLongpressBackPref.setOnPreferenceChangeListener(this);
+            mKillAppLongpressBackPref.setChecked(
+                    Settings.Secure.getInt(getContentResolver(),
+                            Settings.Secure.KILL_APP_LONGPRESS_BACK, 0) == 1);
+        }
     }
 
     private void updateInputMethodSelectorSummary(int value) {
